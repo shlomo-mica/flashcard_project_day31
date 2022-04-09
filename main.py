@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import PhotoImage
 import pandas as pd
 import random
+import csv
+from csv import writer
 
 d = 4
 english_flip_card = {}
@@ -16,20 +18,16 @@ def count_down(count):
     d -= 1
     if count > 0:
         second_counter = window.after(1000, count_down, count - 1)
-
         print(count, 'hhh')
         timer_3second = tk.Label(text=count, background='green', font=("Ariel", 40, "bold"), width=3)
         timer_3second.grid(row=0, column=3)
         if count == 0:
             window.after_cancel(second_counter)
-
     else:
-
         english_card()
 
 
 # canvas.itemconfig(timer_3second, text=f"{counter}")
-
 def english_card():
     canvas.create_image(400, 263, image=back_photo, tags='en_card_image')
     canvas.create_text(400, 162, text="English", font=("Ariel", 20, "italic"), fill='white', tags='english_text_title')
@@ -47,13 +45,12 @@ def clean_text():
     canvas.delete('label_x')
 
     count_down(3)
-
     # create texts
-
     card_pickup()
 
 
 def card_pickup():
+
     global english_flip_card
     random_position = data_game_dict[random.randint(0, 99)]
     french_word = random_position['French']
@@ -61,7 +58,32 @@ def card_pickup():
     english_flip_card = random_position
     # print(english_word, french_word)
     canvas.create_text(400, 290, text=french_word, font=("Ariel", 40, "bold"), tags='label_x')
+    print(f"en_flip", english_flip_card)
     return french_word, english_word
+
+
+def words_to_learn_button():
+    headers = ['French', 'English']
+    print(f"en_flip",english_flip_card)
+    row2 = [{'French': 'police', 'English': 'police'}]
+    new_row = [9532, 'china', 'israel', 26]
+    z=english_flip_card
+
+    with open('maintest.csv', 'a') as csv_file:
+        writer=csv.DictWriter(csv_file, fieldnames=headers)
+        writer.writeheader()
+        writer.writerow(z)
+        # w = writer(csv_file)
+        # w.writerow(row2[1])
+        print(english_flip_card)
+
+
+
+        # for h in row2.keys():
+            # f.write(row2['English'])
+            # f.write(row2['French'])
+
+    print("new button")
 
 
 window = tk.Tk()
@@ -92,22 +114,25 @@ right_button = tk.Button(window, image=right_image, text="right", bg='pink', wid
 right_button.grid(row=1, column=1)
 
 left_button = tk.Button(image=left_image, text="left", bg='pink', width=100, highlightthickness=0,
-                        background=BACKGROUND_COLOR, command=clean_text)
+                        background=BACKGROUND_COLOR, command=words_to_learn_button)
 left_button.grid(row=1, column=0)
 
 # DATA FRAME
 
 
 data_game = pd.read_csv("french_words.csv")
-data_game_dict = pd.DataFrame.to_dict(data_game, orient='records')
-print(data_game_dict[4])
-with open('words_to_learn.csv', 'a') as learn_file:
-    print("g")
-    learn_file.write(data_game_dict[2]['French'])
+print(data_game)
 
+data_game_dict = pd.DataFrame.to_dict(data_game, orient='records')
+print(data_game_dict[6])
+with open('words_to_learn.csv', 'a') as learn_file:
+    learn_file.write(data_game_dict[1]['French'])
+    learn_file.write(data_game_dict[1]['English'])
+data_game.to_csv('test_csv', mode='a', index=False, header=False)
+# pd.to_csv('test_scores.csv', mode='a', index=False, header=False)
 # START PAGE
 
-print(card_pickup()[1])
+print(card_pickup())
 print(f'nowwww', english_flip_card['English'])
 # english_flip = card_pickup()[1]
 
